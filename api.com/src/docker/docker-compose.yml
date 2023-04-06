@@ -1,0 +1,14 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: us
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: dbform
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    container_name: database
