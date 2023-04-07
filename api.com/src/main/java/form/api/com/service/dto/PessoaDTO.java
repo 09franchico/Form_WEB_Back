@@ -1,4 +1,7 @@
 package form.api.com.service.dto;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDate;
@@ -7,9 +10,13 @@ import java.time.LocalDate;
 @Setter
 public class PessoaDTO {
     private Long id;
+    @NotBlank
     private String nome;
+    @NotNull
     private LocalDate dataNascimento;
     private String imagem;
+    @NotNull
+    @Valid
     private EnderecoDTO endereco;
 
     @Override

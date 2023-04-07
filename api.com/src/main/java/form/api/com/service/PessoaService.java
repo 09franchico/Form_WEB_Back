@@ -2,6 +2,8 @@ package form.api.com.service;
 
 import form.api.com.domain.Endereco;
 import form.api.com.domain.Pessoa;
+import form.api.com.domain.Usuario;
+import form.api.com.infra.exception.errors.CustomErrorException;
 import form.api.com.infra.sucessResponse.CustomResponse;
 import form.api.com.repository.EnderecoRepository;
 import form.api.com.repository.PessoaRepository;
@@ -63,14 +65,11 @@ public class PessoaService {
     @Transactional
     public ResponseEntity<CustomResponse> buscarPessoaID (String id){
         Optional<Pessoa> pessoa = pessoaRepository.findById(Long.valueOf(id));
-        PessoaDTO respostaPessoa = pessoaMapper.optionalPessoaToPessoaDTO(pessoa);
-
-        if(respostaPessoa == null){
-            return new ResponseEntity<>(new CustomResponse(400,
-                    "Registro não encontrado !!", respostaPessoa),
-                    HttpStatus.BAD_REQUEST);
+        if(pessoa.isEmpty()){
+            throw new CustomErrorException(HttpStatus.BAD_REQUEST, "Pessoa não encontrado", pessoa);
         }
 
+        PessoaDTO respostaPessoa = pessoaMapper.optionalPessoaToPessoaDTO(pessoa);
         return new ResponseEntity<>(new CustomResponse(200,
                 "Registro encontrado com sucesso!!", respostaPessoa),
                 HttpStatus.OK);
@@ -81,10 +80,9 @@ public class PessoaService {
     public ResponseEntity<CustomResponse> updatePessoa (PessoaDTO pessoaDTO,String id){
         Optional<Pessoa> pessoaDoBanco = pessoaRepository.findById(Long.valueOf(id));
         if (pessoaDoBanco.isEmpty()){
-            return new ResponseEntity<>(new CustomResponse(400,
-                    "Pessoa não encontrado !!", pessoaDoBanco),
-                    HttpStatus.BAD_REQUEST);
+            throw new CustomErrorException(HttpStatus.BAD_REQUEST, "Pessoa não encontrado", pessoaDoBanco);
         }
+
         Optional<Endereco> enderecoDoBanco = enderecoRepository.findById(pessoaDoBanco.get().getEndereco().getId());
 
         //Mapear para as entidades
@@ -93,14 +91,11 @@ public class PessoaService {
 
         //Update nas modificações
         Pessoa pessoa = pessoaRepository.updatePessoa(ps, Long.valueOf(id));
-        Endereco endereco = enderecoRepository.updateEndereco(end,enderecoDoBanco.get().getId());
-
-
         if (pessoa ==null){
-            return new ResponseEntity<>(new CustomResponse(400,
-                    "Registro não editado !!", pessoa),
-                    HttpStatus.BAD_REQUEST);
+            throw new CustomErrorException(HttpStatus.BAD_REQUEST, "Registro não editado encontrado", pessoa);
         }
+
+        Endereco endereco = enderecoRepository.updateEndereco(end,enderecoDoBanco.get().getId());
         return new ResponseEntity<>(new CustomResponse(200,
                 "Registro Editado com sucesso!!", pessoa),
                 HttpStatus.OK);
@@ -109,10 +104,9 @@ public class PessoaService {
     @Transactional
     public ResponseEntity<CustomResponse> deletarPessoa (String id){
        Optional<Pessoa> pessoa = pessoaRepository.findById(Long.valueOf(id));
+
        if (pessoa.isEmpty()){
-           return new ResponseEntity<>(new CustomResponse(400,
-                   "Nenhum registro encontrado!!", id),
-                   HttpStatus.BAD_REQUEST);
+           throw new CustomErrorException(HttpStatus.BAD_REQUEST, "Registro não encontrado", pessoa);
        }
 
        pessoaRepository.deleteById(Long.valueOf(id));
