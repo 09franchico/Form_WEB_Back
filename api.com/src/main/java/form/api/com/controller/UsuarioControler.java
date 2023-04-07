@@ -24,7 +24,7 @@ public class UsuarioControler {
     @GetMapping("/usuario")
     public ResponseEntity<CustomResponse> BuscarUsusario(){
 
-        //consulta ao
+        //consulta todos os usuarios
         List<UsuarioDTO> user = usuarioService.pegarTodosUsuario();
         return new ResponseEntity<>(new CustomResponse(
                 200,
@@ -36,22 +36,21 @@ public class UsuarioControler {
 
     @PostMapping("/usuario")
     public ResponseEntity<CustomResponse> salvarUsuario(@RequestBody UsuarioDTO usuario){
-        try {
 
-            List<UsuarioDTO> user = usuarioService.pegarTodosUsuario();
+            log.info("dados do usuario {}",usuario);
+            //Cria o usuario na base de dados
+            UsuarioDTO user = usuarioService.criarUsuario(usuario);
             return new ResponseEntity<>(new CustomResponse(
                     201,
-                    "Numero de series criado com sucesso!!",
+                    "Usuario criado com sucesso!!",
                     user),
                     HttpStatus.CREATED);
 
-        }catch (NullPointerException e){
-            throw new CustomErrorException(
-                    HttpStatus.BAD_REQUEST,
-                    "Error no parametro",
-                    usuario
-            );
-        }
-
     }
 }
+
+
+//throw new CustomErrorException(
+//        HttpStatus.BAD_REQUEST,
+//        "Error no parametro",
+//        usuario

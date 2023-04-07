@@ -1,6 +1,12 @@
 package form.api.com.service.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class EnderecoDTO {
+    private Long id;
     private String bairro;
     private String rua;
     private Integer numero;
@@ -9,7 +15,8 @@ public class EnderecoDTO {
     @Override
     public String toString() {
         return "EnderecoDTO{" +
-                "bairro='" + bairro + '\'' +
+                "id=" + id +
+                ", bairro='" + bairro + '\'' +
                 ", rua='" + rua + '\'' +
                 ", numero=" + numero +
                 ", cep='" + cep + '\'' +

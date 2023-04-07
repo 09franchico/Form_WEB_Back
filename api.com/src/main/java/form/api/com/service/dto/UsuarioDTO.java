@@ -1,5 +1,4 @@
 package form.api.com.service.dto;
-
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDate;
@@ -8,6 +7,8 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class UsuarioDTO {
+
+    private Long id;
     private String nome;
     private LocalDate dataNascimento;
     private String imagem;
@@ -16,8 +17,10 @@ public class UsuarioDTO {
     @Override
     public String toString() {
         return "UsuarioDTO{" +
-                "nome='" + nome + '\'' +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
                 ", dataNascimento=" + dataNascimento +
+                ", imagem='" + imagem + '\'' +
                 ", endereco=" + endereco +
                 '}';
     }
