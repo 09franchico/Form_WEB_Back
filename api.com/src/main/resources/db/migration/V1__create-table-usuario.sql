@@ -3,7 +3,7 @@ CREATE TABLE endereco (
   bairro VARCHAR(50) NOT NULL,
   rua VARCHAR(100) NOT NULL,
   numero INTEGER NOT NULL,
-  cep VARCHAR(8) NOT NULL
+  cep VARCHAR(10) NOT NULL
 );
 
 

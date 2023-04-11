@@ -12,6 +12,7 @@ import form.api.com.service.mapper.PessoaMapper;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,7 @@ public class PessoaService {
 
     @Transactional
     public ResponseEntity<CustomResponse> pegarTodosUsuario(){
-         List<Pessoa> pessoa = pessoaRepository.findAll();
+         List<Pessoa> pessoa = pessoaRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
          List<PessoaDTO> pessoaTD = pessoaMapper.pessoaToPessoaDTO(pessoa);
 
         return new ResponseEntity<>(new CustomResponse(200,
@@ -117,6 +118,19 @@ public class PessoaService {
 
 
     }
+
+    @Transactional
+    public ResponseEntity<CustomResponse> BuscarPessoaFiltroId (String filtro){
+        List<Pessoa> pessoa = pessoaRepository.findByFiltro(filtro);
+
+        List<PessoaDTO> respostaPessoa = pessoaMapper.pessoaToPessoaDTO(pessoa);
+        return new ResponseEntity<>(new CustomResponse(200,
+                "Registro encontrado com sucesso!!", respostaPessoa),
+                HttpStatus.OK);
+
+    }
+
+
 
 
 }

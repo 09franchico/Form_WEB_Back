@@ -17,7 +17,6 @@ public class EnderecoDTO {
     @NotNull
     private Integer numero;
     @NotBlank
-    @Pattern(regexp = "\\d{8}")
     private String cep;
 
     @Override
