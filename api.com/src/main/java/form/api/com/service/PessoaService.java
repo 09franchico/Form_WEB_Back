@@ -32,6 +32,10 @@ public class PessoaService {
     @Autowired
     private PessoaMapper pessoaMapper;
 
+    /**
+     * Pega todos os usuarios no banco de dados
+     * @return
+     */
     @Transactional
     public ResponseEntity<CustomResponse> pegarTodosUsuario(){
          List<Pessoa> pessoa = pessoaRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
@@ -42,6 +46,11 @@ public class PessoaService {
                 HttpStatus.OK);
     }
 
+    /**
+     * Cria um Usuario com PessoaDto
+     * @param pessoa
+     * @return
+     */
     @Transactional
     public ResponseEntity<CustomResponse> criarUsuario(PessoaDTO pessoa){
 
@@ -63,6 +72,11 @@ public class PessoaService {
 
     }
 
+    /**
+     * Busca uma pessoa pelo ID
+     * @param id
+     * @return
+     */
     @Transactional
     public ResponseEntity<CustomResponse> buscarPessoaID (String id){
         Optional<Pessoa> pessoa = pessoaRepository.findById(Long.valueOf(id));
@@ -77,6 +91,12 @@ public class PessoaService {
 
     }
 
+    /**
+     * Realizar o update de uma pessoa
+     * @param pessoaDTO
+     * @param id
+     * @return
+     */
     @Transactional
     public ResponseEntity<CustomResponse> updatePessoa (PessoaDTO pessoaDTO,String id){
         Optional<Pessoa> pessoaDoBanco = pessoaRepository.findById(Long.valueOf(id));
@@ -93,7 +113,7 @@ public class PessoaService {
         //Update nas modificações
         Pessoa pessoa = pessoaRepository.updatePessoa(ps, Long.valueOf(id));
         if (pessoa ==null){
-            throw new CustomErrorException(HttpStatus.BAD_REQUEST, "Registro não editado encontrado", pessoa);
+            throw new CustomErrorException(HttpStatus.BAD_REQUEST, "Registro não editado encontrado", null);
         }
 
         Endereco endereco = enderecoRepository.updateEndereco(end,enderecoDoBanco.get().getId());
@@ -101,6 +121,12 @@ public class PessoaService {
                 "Registro Editado com sucesso!!", pessoa),
                 HttpStatus.OK);
     }
+
+    /**
+     * Deleta uma pessoa pelo ID
+     * @param id
+     * @return
+     */
 
     @Transactional
     public ResponseEntity<CustomResponse> deletarPessoa (String id){
@@ -110,8 +136,10 @@ public class PessoaService {
            throw new CustomErrorException(HttpStatus.BAD_REQUEST, "Registro não encontrado", pessoa);
        }
 
+       //delete
        pessoaRepository.deleteById(Long.valueOf(id));
        enderecoRepository.deleteById(pessoa.get().getEndereco().getId());
+
         return new ResponseEntity<>(new CustomResponse(200,
                 "Registro Deletado com sucesso!!", id),
                 HttpStatus.OK);
@@ -119,6 +147,11 @@ public class PessoaService {
 
     }
 
+    /**
+     * Busca os dados pelo filtro de pesquisa
+     * @param filtro
+     * @return
+     */
     @Transactional
     public ResponseEntity<CustomResponse> BuscarPessoaFiltroId (String filtro){
         List<Pessoa> pessoa = pessoaRepository.findByFiltro(filtro);

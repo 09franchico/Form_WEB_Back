@@ -20,8 +20,7 @@ public interface EnderecoRepository extends JpaRepository<Endereco,Long> {
             endereco.setRua(end.getRua());
             endereco.setBairro(end.getBairro());
             endereco.setNumero(end.getNumero());
-            Endereco enderecoSalva = save(endereco);
-            return enderecoSalva;
+            return save(endereco);
 
         }
         return null;

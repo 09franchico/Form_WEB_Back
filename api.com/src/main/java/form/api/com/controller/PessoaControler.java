@@ -22,55 +22,79 @@ public class PessoaControler {
     @Autowired
     private PessoaService pessoaService;
 
+    /**
+     * Controle responsavel de buscar todas as pessoas
+     * @return
+     */
     @GetMapping("/pessoa")
     public ResponseEntity<CustomResponse> BuscarPessoa(){
         //consulta todos os usuarios
-        ResponseEntity<CustomResponse> pessoa = pessoaService.pegarTodosUsuario();
-        return pessoa;
+        return pessoaService.pegarTodosUsuario();
     }
 
+    /**
+     * Controle responsavel por salvar uma pessoa
+     * @param pessoa
+     * @return
+     */
     @PostMapping("/pessoa")
     public ResponseEntity<CustomResponse> salvarPessoa(@RequestBody @Valid PessoaDTO pessoa){
             //Cria o usuario na base de dados
-            ResponseEntity<CustomResponse> ps = pessoaService.criarUsuario(pessoa);
-            return ps;
+        return pessoaService.criarUsuario(pessoa);
     }
+
+    /**
+     * Controler resposnavel por buscar Pessoa pelo ID
+     * @param id
+     * @return
+     */
     @GetMapping("/pessoa/{id}")
     public ResponseEntity<CustomResponse> BuscarPessoaID(@PathVariable @Pattern(regexp = "[0-9]+") String id){
 
         //consulta todos os usuarios
-        ResponseEntity<CustomResponse> pessoa = pessoaService.buscarPessoaID(id);
-        return pessoa;
+        return pessoaService.buscarPessoaID(id);
 
     }
 
+    /**
+     * Controler responsavel por editar uma pessoa
+     * @param pessoaDTO
+     * @param id
+     * @return
+     */
     @PutMapping("/pessoa/{id}")
     public ResponseEntity<CustomResponse> editarPessoa(@RequestBody @Valid PessoaDTO pessoaDTO,
                                                        @PathVariable @Pattern(regexp = "[0-9]+") String id){
         //consulta todos os usuarios
-        ResponseEntity<CustomResponse> pessoa = pessoaService.updatePessoa(pessoaDTO, id);
-        return pessoa;
+        return pessoaService.updatePessoa(pessoaDTO, id);
 
     }
+
+    /**
+     * Controler resposnavel por deletar uma pessoa
+     * @param id
+     * @return
+     */
     @DeleteMapping("/pessoa/{id}")
     public ResponseEntity<CustomResponse> deletarPessoa(
             @PathVariable @Pattern(regexp = "[0-9]+") String id){
         //consulta todos os usuarios
-        ResponseEntity<CustomResponse> pessoa = pessoaService.deletarPessoa(id);
-        return pessoa;
+        return pessoaService.deletarPessoa(id);
 
     }
 
+    /**
+     * Controler resposnavel por realizar o filtro de pesquissa
+     * @param filtro
+     * @return
+     */
     @GetMapping("/pessoa/filtro")
     public ResponseEntity<CustomResponse> BuscarPessoaFiltroId(@Param("filtro") String filtro){
 
         if (filtro.isEmpty()){
-            ResponseEntity<CustomResponse> pessoa = pessoaService.pegarTodosUsuario();
-            return pessoa;
+            return pessoaService.pegarTodosUsuario();
         }
-        ResponseEntity<CustomResponse> pessoa = pessoaService.BuscarPessoaFiltroId(filtro);
-        return pessoa;
-
+        return pessoaService.BuscarPessoaFiltroId(filtro);
     }
 
 

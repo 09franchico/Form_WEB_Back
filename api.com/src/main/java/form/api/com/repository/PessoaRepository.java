@@ -23,9 +23,8 @@ public interface PessoaRepository extends JpaRepository<Pessoa,Long> {
             pessoa.setDataNascimento(pes.getDataNascimento());
             pessoa.setImagem(pes.getImagem());
             pessoa.setEndereco(pes.getEndereco());
-            Pessoa pessoaSalva = save(pessoa);
+            return save(pessoa);
 
-            return pessoaSalva;
         }
         return null;
     }

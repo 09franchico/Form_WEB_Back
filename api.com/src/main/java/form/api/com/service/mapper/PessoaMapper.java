@@ -17,6 +17,11 @@ public class PessoaMapper {
     @Autowired
     private ModelMapper modelMapper;
 
+    /**
+     * Mapeia a Pessoa para PessoaDTO
+     * @param pessoas
+     * @return
+     */
     public List<PessoaDTO> pessoaToPessoaDTO(List<Pessoa> pessoas){
 
         List<PessoaDTO> pessoaDTOs = new ArrayList<>();
@@ -29,6 +34,11 @@ public class PessoaMapper {
         return pessoaDTOs;
     }
 
+    /**
+     * Mapeia Optional Pessoa para PessoaDTO
+     * @param pessoa
+     * @return
+     */
     public PessoaDTO optionalPessoaToPessoaDTO(Optional<Pessoa> pessoa){
 
         if (pessoa.isEmpty()){
@@ -48,13 +58,14 @@ public class PessoaMapper {
         enderecoDTO.setRua(pessoa.get().getEndereco().getRua());
         enderecoDTO.setNumero(pessoa.get().getEndereco().getNumero());
         pessoaDTO.setEndereco(enderecoDTO);
-
         return pessoaDTO;
-
-
-
     }
 
+    /**
+     * Mapeia Item Pessoa para PessoaDTO
+     * @param pessoa
+     * @return
+     */
     public PessoaDTO itemPessoaToPessoaDTO(Pessoa pessoa){
 
         PessoaDTO pessoaDTO = new PessoaDTO();
@@ -74,6 +85,12 @@ public class PessoaMapper {
         return pessoaDTO;
     }
 
+    /**
+     * Mepeia pessoaDTO e id para Pessoa
+     * @param pessoaDTO
+     * @param id
+     * @return
+     */
     public Pessoa pessoaDTOToPessoa(PessoaDTO pessoaDTO,Long id){
 
         Pessoa pessoa = new Pessoa();
@@ -90,21 +107,11 @@ public class PessoaMapper {
         return pessoa;
     }
 
-    public Pessoa pessoaDTOToPessoaUpdate(PessoaDTO pessoaDTO){
-
-        Pessoa pessoa = new Pessoa();
-        pessoa.setNome(pessoaDTO.getNome());
-        pessoa.setDataNascimento(pessoaDTO.getDataNascimento());
-        pessoa.setImagem(pessoaDTO.getImagem());
-        Endereco endereco = new Endereco();
-        endereco.setBairro(pessoaDTO.getEndereco().getBairro());
-        endereco.setRua(pessoaDTO.getEndereco().getRua());
-        endereco.setNumero(pessoaDTO.getEndereco().getNumero());
-        endereco.setCep(pessoaDTO.getEndereco().getCep());
-        pessoa.setEndereco(endereco);
-        return pessoa;
-    }
-
+    /**
+     * Mepeia PessoaDTO para endereco
+     * @param pessoaDTO
+     * @return
+     */
     public Endereco pessoaDTOToEndereco(PessoaDTO pessoaDTO){
         Endereco ende = new Endereco();
         ende.setBairro(pessoaDTO.getEndereco().getBairro());
