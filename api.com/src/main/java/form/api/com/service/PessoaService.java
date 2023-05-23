@@ -154,7 +154,6 @@ public class PessoaService {
     @Transactional
     public ResponseEntity<CustomResponse> BuscarPessoaFiltroId (String filtro, String limit , String offset){
 
-
         Sort sort = Sort.by("nome").ascending(); // Ordenação opcional
         Pageable pageable = PageRequest.of(Integer.parseInt(offset), Integer.parseInt(limit),sort);
         Page<Pessoa> resultado = pessoaRepository.findByFiltro(filtro, pageable);
