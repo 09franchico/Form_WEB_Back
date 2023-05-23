@@ -1,8 +1,6 @@
 package form.api.com.service;
-
 import form.api.com.domain.Endereco;
 import form.api.com.domain.Pessoa;
-import form.api.com.domain.Usuario;
 import form.api.com.infra.exception.errors.CustomErrorException;
 import form.api.com.infra.sucessResponse.CustomResponse;
 import form.api.com.repository.EnderecoRepository;
@@ -12,6 +10,9 @@ import form.api.com.service.mapper.PessoaMapper;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,11 +39,13 @@ public class PessoaService {
      */
     @Transactional
     public ResponseEntity<CustomResponse> pegarTodosUsuario(){
+
          List<Pessoa> pessoa = pessoaRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
          List<PessoaDTO> pessoaTD = pessoaMapper.pessoaToPessoaDTO(pessoa);
 
+
         return new ResponseEntity<>(new CustomResponse(200,
-                "Registro encontrado com sucesso!!", pessoa),
+                "Registro encontrado com sucesso!!", 0L,pessoaTD),
                 HttpStatus.OK);
     }
 
@@ -66,7 +69,7 @@ public class PessoaService {
         PessoaDTO responsePessoa = pessoaMapper.itemPessoaToPessoaDTO(us);
 
         return new ResponseEntity<>(new CustomResponse(201,
-                "Pessoa criado com sucesso!!", responsePessoa),
+                "Pessoa criado com sucesso!!",0L, responsePessoa),
                 HttpStatus.CREATED);
 
 
@@ -83,10 +86,9 @@ public class PessoaService {
         if(pessoa.isEmpty()){
             throw new CustomErrorException(HttpStatus.BAD_REQUEST, "Pessoa não encontrado", pessoa);
         }
-
         PessoaDTO respostaPessoa = pessoaMapper.optionalPessoaToPessoaDTO(pessoa);
         return new ResponseEntity<>(new CustomResponse(200,
-                "Registro encontrado com sucesso!!", respostaPessoa),
+                "Registro encontrado com sucesso!!",0L, respostaPessoa),
                 HttpStatus.OK);
 
     }
@@ -108,7 +110,6 @@ public class PessoaService {
 
         //Mapear para as entidades
         Pessoa ps = pessoaMapper.pessoaDTOToPessoa(pessoaDTO,enderecoDoBanco.get().getId());
-        Endereco end = pessoaMapper.pessoaDTOToEndereco(pessoaDTO);
 
         //Update nas modificações
         Pessoa pessoa = pessoaRepository.updatePessoa(ps, Long.valueOf(id));
@@ -116,9 +117,8 @@ public class PessoaService {
             throw new CustomErrorException(HttpStatus.BAD_REQUEST, "Registro não editado encontrado", null);
         }
 
-        Endereco endereco = enderecoRepository.updateEndereco(end,enderecoDoBanco.get().getId());
         return new ResponseEntity<>(new CustomResponse(200,
-                "Registro Editado com sucesso!!", pessoa),
+                "Registro Editado com sucesso!!",0L, pessoa),
                 HttpStatus.OK);
     }
 
@@ -127,7 +127,6 @@ public class PessoaService {
      * @param id
      * @return
      */
-
     @Transactional
     public ResponseEntity<CustomResponse> deletarPessoa (String id){
        Optional<Pessoa> pessoa = pessoaRepository.findById(Long.valueOf(id));
@@ -141,24 +140,29 @@ public class PessoaService {
        enderecoRepository.deleteById(pessoa.get().getEndereco().getId());
 
         return new ResponseEntity<>(new CustomResponse(200,
-                "Registro Deletado com sucesso!!", id),
+                "Registro Deletado com sucesso!!",0L, id),
                 HttpStatus.OK);
 
 
     }
 
     /**
-     * Busca os dados pelo filtro de pesquisa
+     * Busca os dados pelo filtro de pesquisa, limit e offset
      * @param filtro
      * @return
      */
     @Transactional
-    public ResponseEntity<CustomResponse> BuscarPessoaFiltroId (String filtro){
-        List<Pessoa> pessoa = pessoaRepository.findByFiltro(filtro);
+    public ResponseEntity<CustomResponse> BuscarPessoaFiltroId (String filtro, String limit , String offset){
 
-        List<PessoaDTO> respostaPessoa = pessoaMapper.pessoaToPessoaDTO(pessoa);
+
+        Sort sort = Sort.by("nome").ascending(); // Ordenação opcional
+        Pageable pageable = PageRequest.of(Integer.parseInt(offset), Integer.parseInt(limit),sort);
+        Page<Pessoa> resultado = pessoaRepository.findByFiltro(filtro, pageable);
+        List<Pessoa> pessoas = resultado.getContent();
+
+        List<PessoaDTO> respostaPessoa = pessoaMapper.pessoaToPessoaDTO(pessoas);
         return new ResponseEntity<>(new CustomResponse(200,
-                "Registro encontrado com sucesso!!", respostaPessoa),
+                "Registro encontrado com sucesso!!",resultado.getTotalElements() ,respostaPessoa),
                 HttpStatus.OK);
 
     }

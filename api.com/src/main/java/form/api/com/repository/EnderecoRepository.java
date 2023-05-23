@@ -1,7 +1,6 @@
 package form.api.com.repository;
 
 import form.api.com.domain.Endereco;
-import form.api.com.domain.Pessoa;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

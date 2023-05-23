@@ -89,12 +89,11 @@ public class PessoaControler {
      * @return
      */
     @GetMapping("/pessoa/filtro")
-    public ResponseEntity<CustomResponse> BuscarPessoaFiltroId(@Param("filtro") String filtro){
+    public ResponseEntity<CustomResponse> BuscarPessoaFiltroId(@Param("filtro") String filtro,
+                                                                @Param("limit") String limit ,
+                                                                @Param("offset") String offset){
 
-        if (filtro.isEmpty()){
-            return pessoaService.pegarTodosUsuario();
-        }
-        return pessoaService.BuscarPessoaFiltroId(filtro);
+        return pessoaService.BuscarPessoaFiltroId(filtro,limit,offset);
     }
 
 
