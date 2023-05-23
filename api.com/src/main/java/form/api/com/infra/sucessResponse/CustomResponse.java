@@ -12,5 +12,11 @@ public class CustomResponse {
     private String message;
     private Long total;
     private Object data;
+
+    public CustomResponse (int status , String msg , Object data){
+        this.status = status;
+        this.message = msg;
+        this.data = data;
+    }
 }
 

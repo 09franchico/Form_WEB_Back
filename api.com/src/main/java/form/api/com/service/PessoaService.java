@@ -69,7 +69,7 @@ public class PessoaService {
         PessoaDTO responsePessoa = pessoaMapper.itemPessoaToPessoaDTO(us);
 
         return new ResponseEntity<>(new CustomResponse(201,
-                "Pessoa criado com sucesso!!",0L, responsePessoa),
+                "Pessoa criado com sucesso!!", responsePessoa),
                 HttpStatus.CREATED);
 
 
@@ -88,7 +88,7 @@ public class PessoaService {
         }
         PessoaDTO respostaPessoa = pessoaMapper.optionalPessoaToPessoaDTO(pessoa);
         return new ResponseEntity<>(new CustomResponse(200,
-                "Registro encontrado com sucesso!!",0L, respostaPessoa),
+                "Registro encontrado com sucesso!!", respostaPessoa),
                 HttpStatus.OK);
 
     }
@@ -118,7 +118,7 @@ public class PessoaService {
         }
 
         return new ResponseEntity<>(new CustomResponse(200,
-                "Registro Editado com sucesso!!",0L, pessoa),
+                "Registro Editado com sucesso!!", pessoa),
                 HttpStatus.OK);
     }
 
@@ -140,7 +140,7 @@ public class PessoaService {
        enderecoRepository.deleteById(pessoa.get().getEndereco().getId());
 
         return new ResponseEntity<>(new CustomResponse(200,
-                "Registro Deletado com sucesso!!",0L, id),
+                "Registro Deletado com sucesso!!", id),
                 HttpStatus.OK);
 
 
