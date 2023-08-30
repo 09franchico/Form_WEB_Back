@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 
 @Service
@@ -101,7 +102,8 @@ public class PessoaService {
      * @return
      */
     @Transactional
-    public ResponseEntity<CustomResponse> updatePessoa (PessoaDTO pessoaDTO,String id){
+    public ResponseEntity<CustomResponse> updatePessoa (PessoaDTO pessoaDTO,Long id){
+
         Optional<Pessoa> pessoaDoBanco = pessoaRepository.findById(Long.valueOf(id));
         if (pessoaDoBanco.isEmpty()){
             throw new CustomErrorException(HttpStatus.BAD_REQUEST, "Pessoa não encontrado", pessoaDoBanco);
@@ -121,6 +123,8 @@ public class PessoaService {
         return new ResponseEntity<>(new CustomResponse(200,
                 "Registro Editado com sucesso!!", pessoa),
                 HttpStatus.OK);
+
+
     }
 
     /**

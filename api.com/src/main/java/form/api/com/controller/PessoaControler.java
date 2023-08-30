@@ -64,7 +64,7 @@ public class PessoaControler {
      */
     @PutMapping("/pessoa/{id}")
     public ResponseEntity<CustomResponse> editarPessoa(@RequestBody @Valid PessoaDTO pessoaDTO,
-                                                       @PathVariable @Pattern(regexp = "[0-9]+") String id){
+                                                       @PathVariable @Pattern(regexp = "[0-9]+") Long id){
         //consulta todos os usuarios
         return pessoaService.updatePessoa(pessoaDTO, id);
 
