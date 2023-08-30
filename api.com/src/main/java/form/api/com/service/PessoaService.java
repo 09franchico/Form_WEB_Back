@@ -6,7 +6,9 @@ import form.api.com.infra.sucessResponse.CustomResponse;
 import form.api.com.repository.EnderecoRepository;
 import form.api.com.repository.PessoaRepository;
 import form.api.com.service.dto.PessoaDTO;
+import form.api.com.service.mapper.EnderecoMapper;
 import form.api.com.service.mapper.PessoaMapper;
+import form.api.com.service.mapper.PessoaUserMapper;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,10 @@ public class PessoaService {
     private EnderecoRepository enderecoRepository;
     @Autowired
     private PessoaMapper pessoaMapper;
+    @Autowired
+    private PessoaUserMapper pessoaUserMapper;
+    @Autowired
+    private EnderecoMapper enderecoMapper;
 
     /**
      * Pega todos os usuarios no banco de dados
@@ -44,8 +50,7 @@ public class PessoaService {
          List<PessoaDTO> pessoaTD = pessoaMapper.pessoaToPessoaDTO(pessoa);
 
 
-        return new ResponseEntity<>(new CustomResponse(200,
-                "Registro encontrado com sucesso!!", 0L,pessoaTD),
+        return new ResponseEntity<>(new CustomResponse(200, "Registro encontrado com sucesso!!", pessoaTD),
                 HttpStatus.OK);
     }
 
@@ -58,21 +63,17 @@ public class PessoaService {
     public ResponseEntity<CustomResponse> criarUsuario(PessoaDTO pessoa){
 
         //Salva endereco
-        Endereco endereco = pessoaMapper.pessoaDTOToEndereco(pessoa);
+        Endereco endereco = enderecoMapper.toEntity(pessoa.getEndereco());
         Endereco resulteEnd = enderecoRepository.save(endereco);
 
-        //Salva pessoa
-        Pessoa ps = pessoaMapper.pessoaDTOToPessoa(pessoa,resulteEnd.getId());
-        Pessoa us = pessoaRepository.save(ps);
-
-        //Mapear para PessoaDTO
-        PessoaDTO responsePessoa = pessoaMapper.itemPessoaToPessoaDTO(us);
+        //Salva Pessoa
+        Pessoa pessoaSave = pessoaUserMapper.toEntity(pessoa);
+        pessoaSave.setEndereco(resulteEnd);
+        Pessoa salvo = pessoaRepository.save(pessoaSave);
 
         return new ResponseEntity<>(new CustomResponse(201,
-                "Pessoa criado com sucesso!!", responsePessoa),
+                "Pessoa criado com sucesso!!",pessoaUserMapper.toDto(salvo)),
                 HttpStatus.CREATED);
-
-
     }
 
     /**
@@ -86,7 +87,7 @@ public class PessoaService {
         if(pessoa.isEmpty()){
             throw new CustomErrorException(HttpStatus.BAD_REQUEST, "Pessoa não encontrado", pessoa);
         }
-        PessoaDTO respostaPessoa = pessoaMapper.optionalPessoaToPessoaDTO(pessoa);
+        PessoaDTO respostaPessoa = pessoaUserMapper.toDto(pessoa.get());
         return new ResponseEntity<>(new CustomResponse(200,
                 "Registro encontrado com sucesso!!", respostaPessoa),
                 HttpStatus.OK);
@@ -105,16 +106,16 @@ public class PessoaService {
         if (pessoaDoBanco.isEmpty()){
             throw new CustomErrorException(HttpStatus.BAD_REQUEST, "Pessoa não encontrado", pessoaDoBanco);
         }
-
         Optional<Endereco> enderecoDoBanco = enderecoRepository.findById(pessoaDoBanco.get().getEndereco().getId());
 
         //Mapear para as entidades
-        Pessoa ps = pessoaMapper.pessoaDTOToPessoa(pessoaDTO,enderecoDoBanco.get().getId());
+        Pessoa ps = pessoaUserMapper.toEntity(pessoaDTO);
+        ps.setEndereco(enderecoDoBanco.get());
 
         //Update nas modificações
         Pessoa pessoa = pessoaRepository.updatePessoa(ps, Long.valueOf(id));
         if (pessoa ==null){
-            throw new CustomErrorException(HttpStatus.BAD_REQUEST, "Registro não editado encontrado", null);
+            throw new CustomErrorException(HttpStatus.BAD_REQUEST, "Registro não editado.", null);
         }
 
         return new ResponseEntity<>(new CustomResponse(200,
@@ -158,10 +159,9 @@ public class PessoaService {
         Pageable pageable = PageRequest.of(Integer.parseInt(offset), Integer.parseInt(limit),sort);
         Page<Pessoa> resultado = pessoaRepository.findByFiltro(filtro, pageable);
         List<Pessoa> pessoas = resultado.getContent();
-
-        List<PessoaDTO> respostaPessoa = pessoaMapper.pessoaToPessoaDTO(pessoas);
+        List<PessoaDTO> respostaPessoa = pessoaUserMapper.toDto(pessoas);
         return new ResponseEntity<>(new CustomResponse(200,
-                "Registro encontrado com sucesso!!",resultado.getTotalElements() ,respostaPessoa),
+                "Registro encontrado com sucesso!!",respostaPessoa),
                 HttpStatus.OK);
 
     }

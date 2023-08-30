@@ -1,21 +1,15 @@
 package form.api.com.service.mapper;
-
 import form.api.com.domain.Endereco;
 import form.api.com.domain.Pessoa;
 import form.api.com.service.dto.EnderecoDTO;
 import form.api.com.service.dto.PessoaDTO;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class PessoaMapper {
-    @Autowired
-    private ModelMapper modelMapper;
 
     /**
      * Mapeia a Pessoa para PessoaDTO
@@ -27,9 +21,12 @@ public class PessoaMapper {
         List<PessoaDTO> pessoaDTOs = new ArrayList<>();
 
         for (Pessoa pessoa : pessoas) {
-            PessoaDTO pessoaDTO = modelMapper.map(pessoa, PessoaDTO.class);
-            pessoaDTO.setEndereco(modelMapper.map(pessoa.getEndereco(), EnderecoDTO.class));
+            PessoaDTO pessoaDTO = new PessoaDTO();
+            pessoaDTO.setNome(pessoa.getNome());
             pessoaDTOs.add(pessoaDTO);
+            //PessoaDTO pessoaDTO = modelMapper.map(pessoa, PessoaDTO.class);
+           // pessoaDTO.setEndereco(modelMapper.map(pessoa.getEndereco(), EnderecoDTO.class));
+          //  pessoaDTOs.add(pessoaDTO);
         }
         return pessoaDTOs;
     }
