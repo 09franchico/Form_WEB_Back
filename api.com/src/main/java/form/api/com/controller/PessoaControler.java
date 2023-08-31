@@ -64,7 +64,7 @@ public class PessoaControler {
      */
     @PutMapping("/pessoa/{id}")
     public ResponseEntity<CustomResponse> editarPessoa(@RequestBody @Valid PessoaDTO pessoaDTO,
-                                                       @PathVariable @Pattern(regexp = "[0-9]+") Long id){
+                                                       @PathVariable  Long id){
         //consulta todos os usuarios
         return pessoaService.updatePessoa(pessoaDTO, id);
 
@@ -77,7 +77,7 @@ public class PessoaControler {
      */
     @DeleteMapping("/pessoa/{id}")
     public ResponseEntity<CustomResponse> deletarPessoa(
-            @PathVariable @Pattern(regexp = "[0-9]+") String id){
+            @PathVariable Long id){
         //consulta todos os usuarios
         return pessoaService.deletarPessoa(id);
 

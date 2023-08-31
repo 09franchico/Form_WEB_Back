@@ -1,14 +1,19 @@
 package form.api.com.service;
 import form.api.com.domain.Endereco;
 import form.api.com.domain.Pessoa;
+import form.api.com.infra.exception.errors.Error;
 import form.api.com.infra.exception.errors.CustomErrorException;
 import form.api.com.infra.sucessResponse.CustomResponse;
+import form.api.com.infra.sucessResponse.Sucesso;
 import form.api.com.repository.EnderecoRepository;
 import form.api.com.repository.PessoaRepository;
 import form.api.com.service.dto.PessoaDTO;
 import form.api.com.service.mapper.EnderecoMapper;
-import form.api.com.service.mapper.PessoaMapper;
 import form.api.com.service.mapper.PessoaUserMapper;
+import fr.w3blog.zpl.model.ZebraLabel;
+import fr.w3blog.zpl.model.ZebraPrintException;
+import fr.w3blog.zpl.model.ZebraUtils;
+import fr.w3blog.zpl.model.element.ZebraNativeZpl;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +24,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 
 @Service
@@ -33,8 +39,6 @@ public class PessoaService {
     private PessoaRepository pessoaRepository;
     @Autowired
     private EnderecoRepository enderecoRepository;
-    @Autowired
-    private PessoaMapper pessoaMapper;
     @Autowired
     private PessoaUserMapper pessoaUserMapper;
     @Autowired
@@ -48,10 +52,9 @@ public class PessoaService {
     public ResponseEntity<CustomResponse> pegarTodosUsuario(){
 
          List<Pessoa> pessoa = pessoaRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-         List<PessoaDTO> pessoaTD = pessoaMapper.pessoaToPessoaDTO(pessoa);
-
-
-        return new ResponseEntity<>(new CustomResponse(200, "Registro encontrado com sucesso!!", pessoaTD),
+         List<PessoaDTO> pessoaTD = pessoaUserMapper.toDto(pessoa);
+        return new ResponseEntity<>(new CustomResponse(200,
+                Sucesso.SC_0.getMsg(), pessoaTD),
                 HttpStatus.OK);
     }
 
@@ -73,7 +76,7 @@ public class PessoaService {
         Pessoa salvo = pessoaRepository.save(pessoaSave);
 
         return new ResponseEntity<>(new CustomResponse(201,
-                "Pessoa criado com sucesso!!",pessoaUserMapper.toDto(salvo)),
+                Sucesso.SC_1.getMsg(), pessoaUserMapper.toDto(salvo)),
                 HttpStatus.CREATED);
     }
 
@@ -86,11 +89,13 @@ public class PessoaService {
     public ResponseEntity<CustomResponse> buscarPessoaID (String id){
         Optional<Pessoa> pessoa = pessoaRepository.findById(Long.valueOf(id));
         if(pessoa.isEmpty()){
-            throw new CustomErrorException(HttpStatus.BAD_REQUEST, "Pessoa não encontrado", pessoa);
+            throw new CustomErrorException(HttpStatus.BAD_REQUEST,
+                    Error.ERRO_0.getMsg(),
+                    new ArrayList<>());
         }
         PessoaDTO respostaPessoa = pessoaUserMapper.toDto(pessoa.get());
         return new ResponseEntity<>(new CustomResponse(200,
-                "Registro encontrado com sucesso!!", respostaPessoa),
+                Sucesso.SC_0.getMsg(), respostaPessoa),
                 HttpStatus.OK);
 
     }
@@ -106,10 +111,11 @@ public class PessoaService {
 
         Optional<Pessoa> pessoaDoBanco = pessoaRepository.findById(Long.valueOf(id));
         if (pessoaDoBanco.isEmpty()){
-            throw new CustomErrorException(HttpStatus.BAD_REQUEST, "Pessoa não encontrado", pessoaDoBanco);
+            throw new CustomErrorException(HttpStatus.BAD_REQUEST,
+                    Error.ERRO_0.getMsg(),
+                    pessoaDoBanco);
         }
         Optional<Endereco> enderecoDoBanco = enderecoRepository.findById(pessoaDoBanco.get().getEndereco().getId());
-
         //Mapear para as entidades
         Pessoa ps = pessoaUserMapper.toEntity(pessoaDTO);
         ps.setEndereco(enderecoDoBanco.get());
@@ -117,13 +123,13 @@ public class PessoaService {
         //Update nas modificações
         Pessoa pessoa = pessoaRepository.updatePessoa(ps, Long.valueOf(id));
         if (pessoa ==null){
-            throw new CustomErrorException(HttpStatus.BAD_REQUEST, "Registro não editado.", null);
+            throw new CustomErrorException(HttpStatus.BAD_REQUEST,
+                    Error.ERRO_1.getMsg(),
+                    null);
         }
-
         return new ResponseEntity<>(new CustomResponse(200,
-                "Registro Editado com sucesso!!", pessoa),
+                Sucesso.SC_2.getMsg(), pessoa),
                 HttpStatus.OK);
-
 
     }
 
@@ -133,22 +139,20 @@ public class PessoaService {
      * @return
      */
     @Transactional
-    public ResponseEntity<CustomResponse> deletarPessoa (String id){
-       Optional<Pessoa> pessoa = pessoaRepository.findById(Long.valueOf(id));
+    public ResponseEntity<CustomResponse> deletarPessoa (Long id){
 
+       Optional<Pessoa> pessoa = pessoaRepository.findById(id);
        if (pessoa.isEmpty()){
-           throw new CustomErrorException(HttpStatus.BAD_REQUEST, "Registro não encontrado", pessoa);
+           throw new CustomErrorException(HttpStatus.BAD_REQUEST,
+                   Error.ERRO_2.getMsg(), pessoa);
        }
-
        //delete
-       pessoaRepository.deleteById(Long.valueOf(id));
+       pessoaRepository.deleteById(id);
        enderecoRepository.deleteById(pessoa.get().getEndereco().getId());
-
-        return new ResponseEntity<>(new CustomResponse(200,
-                "Registro Deletado com sucesso!!", id),
+        return new ResponseEntity<>(new CustomResponse(
+                200,
+                Sucesso.SC_3.getMsg(), id),
                 HttpStatus.OK);
-
-
     }
 
     /**
@@ -164,8 +168,16 @@ public class PessoaService {
         Page<Pessoa> resultado = pessoaRepository.findByFiltro(filtro, pageable);
         List<Pessoa> pessoas = resultado.getContent();
         List<PessoaDTO> respostaPessoa = pessoaUserMapper.toDto(pessoas);
+        if (respostaPessoa.isEmpty()){
+            return new ResponseEntity<>(new CustomResponse(200,
+                    Sucesso.SC_00.getMsg(),
+                    respostaPessoa),
+                    HttpStatus.OK);
+        }
         return new ResponseEntity<>(new CustomResponse(200,
-                "Registro encontrado com sucesso!!",respostaPessoa),
+                Sucesso.SC_0.getMsg(),
+                respostaPessoa
+        ),
                 HttpStatus.OK);
 
     }

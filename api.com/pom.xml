@@ -67,6 +67,12 @@
 			<artifactId>mapstruct-processor</artifactId>
 			<version>1.5.5.Final</version>
 		</dependency>
+		<dependency>
+			<groupId>fr.w3blog</groupId>
+			<artifactId>zebra-zpl</artifactId>
+			<version>0.0.1</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<build>

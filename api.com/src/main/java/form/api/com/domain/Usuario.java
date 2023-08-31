@@ -18,7 +18,6 @@ public class Usuario {
     private String nome;
     private LocalDate dataNascimento;
     private String imagem;
-
     @OneToOne
     @JoinColumn(name = "endereco_id")
     private Endereco endereco;

@@ -11,11 +11,16 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Objects;
 
 @ControllerAdvice
 public class ErrorException {
 
-
+    /**
+     * Custom error 404 notfound
+     * @param ex
+     * @return
+     */
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> Erro404(EntityNotFoundException ex) {
 
@@ -32,10 +37,13 @@ public class ErrorException {
                 ex.getCause()),
                 HttpStatus.NOT_FOUND
         );
-
-
     }
 
+    /**
+     * Custom error Validação
+     * @param ex
+     * @return
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> ValidateErro400(MethodArgumentNotValidException ex) {
 
@@ -47,21 +55,23 @@ public class ErrorException {
         String stackTrace = stringWriter.toString();
         return new ResponseEntity<>(  new ErrorResponse(
                 status,
-                ex.getFieldError().getDefaultMessage(),
+                Objects.requireNonNull(ex.getFieldError()).getDefaultMessage(),
                 stackTrace,
                 ex.getFieldError().getField()),
                 status
         );
     }
 
+    /**
+     * Custom error BadRequest
+     * @param e
+     * @return
+     */
     @ExceptionHandler(CustomErrorException.class)
     public ResponseEntity<ErrorResponse> handleCustomErrorExceptions(Exception e) {
 
-
         CustomErrorException customErrorException = (CustomErrorException) e;
         HttpStatus status = customErrorException.getStatus();
-
-
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);
         customErrorException.printStackTrace(printWriter);
@@ -71,7 +81,8 @@ public class ErrorException {
                 status,
                 customErrorException.getMessage(),
                 stackTrace,
-                customErrorException.getData()),
+                customErrorException.getData()
+        ),
                 status
         );
 
