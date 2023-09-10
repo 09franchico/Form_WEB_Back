@@ -1,26 +1,25 @@
 package form.api.com.domain;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Entity(name = "usuario")
-@EqualsAndHashCode(of = "id")
-public class Usuario {
+@Entity
+public class Usuario implements UserDetails {
+    private static final long serialVersionUID = 1L;
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
-    private LocalDate dataNascimento;
-    private String imagem;
-    @OneToOne
-    @JoinColumn(name = "endereco_id")
-    private Endereco endereco;
+    private String email;
+    private String senha;
+
 
     public Long getId() {
         return id;
@@ -38,27 +37,54 @@ public class Usuario {
         this.nome = nome;
     }
 
-    public LocalDate getDataNascimento() {
-        return dataNascimento;
+    public String getEmail() {
+        return email;
     }
 
-    public void setDataNascimento(LocalDate dataNascimento) {
-        this.dataNascimento = dataNascimento;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getImagem() {
-        return imagem;
+    public String getSenha() {
+        return senha;
     }
 
-    public void setImagem(String imagem) {
-        this.imagem = imagem;
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 
-    public Endereco getEndereco() {
-        return endereco;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
-    public void setEndereco(Endereco endereco) {
-        this.endereco = endereco;
+    @Override
+    public String getPassword() {
+        return senha;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }
