@@ -4,7 +4,6 @@ import form.api.com.config.security.TokenService;
 import form.api.com.service.dto.LoginFormDTO;
 import form.api.com.service.dto.TokenDTO;
 import jakarta.validation.Valid;
-import org.apache.tomcat.util.descriptor.web.LoginConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,9 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.spi.LoginModule;
 
 @RestController
 @RequestMapping("/auth")

@@ -1,7 +1,6 @@
 package form.api.com.service.dto;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 public class LoginFormDTO {
-
     private String email;
     private String senha;
 
