@@ -10,7 +10,7 @@ docker-compose -f ./src/docker/docker-compose.yml up
 docker-compose up
 
 # Subir aplicação em IDE
-  - Apenas start na IDE
+  - Apenas start em FormApplication na IDE
 
 
 
