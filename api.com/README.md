@@ -6,5 +6,13 @@
 docker-compose -f ./src/docker/docker-compose.yml up
 
 
-# Subir aplicação
+# Subir aplicação docker
 docker-compose up
+
+# Subir aplicação RUN
+  - IDE
+
+
+
+
+
